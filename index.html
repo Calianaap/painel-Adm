@@ -1,0 +1,2404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QBCore FiveM - Painel Administrativo de Elite</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-base: #07090e;
+            --bg-surface: #0e121b;
+            --bg-card: #141a27;
+            --bg-card-hover: #1a2233;
+            --border-color: rgba(255, 255, 255, 0.07);
+            --border-hover: rgba(255, 255, 255, 0.16);
+            
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.25);
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --accent-purple: #a855f7;
+
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        aside.sidebar {
+            width: 270px;
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 50;
+            padding: 24px 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 12px 20px 12px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 16px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #fff;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .brand-info h2 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-info span {
+            font-size: 11px;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            font-weight: 700;
+            padding: 10px 14px 4px;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13.5px;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .nav-item.active {
+            color: #fff;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.16), rgba(99, 102, 241, 0.05));
+            border-left: 3px solid var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-item.active i {
+            color: var(--primary);
+        }
+
+        .nav-item i {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .badge-count {
+            margin-left: auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent-emerald);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 8px;
+        }
+
+        .admin-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a855f7, #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+            border: 2px solid var(--primary);
+        }
+
+        .admin-details h4 {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .admin-details span {
+            font-size: 11px;
+            color: var(--accent-emerald);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .admin-details span::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent-emerald);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Main Container */
+        main.main-content {
+            margin-left: 270px;
+            flex: 1;
+            padding: 28px 36px 60px 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* Top Header */
+        header.top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header-title p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .quick-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 16px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
+            transform: translateY(-1px);
+        }
+
+        .btn-emerald {
+            background: var(--accent-emerald);
+            color: white;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-emerald:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--accent-rose);
+            border-color: rgba(244, 63, 94, 0.25);
+        }
+
+        .btn-danger:hover {
+            background: var(--accent-rose);
+            color: white;
+        }
+
+        .btn-outline {
+            background: var(--bg-card);
+            color: var(--text-muted);
+            border-color: var(--border-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-main);
+            border-color: var(--border-hover);
+        }
+
+        /* Server Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .metric-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--card-accent, var(--primary));
+        }
+
+        .metric-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .metric-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--card-accent, var(--primary));
+            font-size: 16px;
+        }
+
+        .metric-val {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 12px 0 6px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .metric-sub {
+            font-size: 12px;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .metric-sub.positive {
+            color: var(--accent-emerald);
+        }
+
+        /* Charts Section */
+        .chart-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .dashboard-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .box-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .box-header h3 {
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .box-header h3 i {
+            color: var(--primary);
+        }
+
+        .box-tools {
+            display: flex;
+            gap: 6px;
+        }
+
+        .pill-tab {
+            padding: 5px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pill-tab.active {
+            background: var(--bg-surface);
+            color: var(--text-main);
+            border-color: var(--border-color);
+            font-weight: 600;
+        }
+
+        /* Player Details Card */
+        .player-info-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(6, 182, 212, 0.04));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .player-info-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .player-info-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a855f7, #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .player-info-meta h3 {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .player-info-meta span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .player-info-stats {
+            display: flex;
+            gap: 24px;
+        }
+
+        .p-stat-box {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .p-stat-box label {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .p-stat-box strong {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Stash Cards Grid */
+        .stash-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 18px;
+        }
+
+        .stash-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .stash-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .stash-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .stash-title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stash-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--accent-cyan);
+            border: 1px solid var(--border-color);
+        }
+
+        .stash-title-group h4 {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .stash-title-group span {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .stash-coord-box {
+            background: #05070a;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--accent-cyan);
+        }
+
+        .stash-coord-box i {
+            color: var(--accent-rose);
+            margin-right: 6px;
+        }
+
+        .stash-coord-text {
+            user-select: all;
+        }
+
+        .stash-stats {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+
+        .stash-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* Table */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        table.custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        table.custom-table th {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 14px 16px;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.6px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        table.custom-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        table.custom-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .player-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-pfp {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--bg-surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
+            color: var(--accent-cyan);
+        }
+
+        .role-pill {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .role-god {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--accent-rose);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        .role-admin {
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--accent-purple);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .role-vip {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-amber);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .role-player {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-emerald);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* Filter Controls */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 9px 14px;
+            flex: 1;
+            max-width: 420px;
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 13.5px;
+            width: 100%;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-dim);
+        }
+
+        /* Inventory Grid */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 12px;
+        }
+
+        .item-slot {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .item-slot:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .item-slot.has-item {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .item-icon {
+            font-size: 32px;
+            margin-bottom: 6px;
+            color: var(--accent-cyan);
+        }
+
+        .item-name {
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        .item-qty {
+            position: absolute;
+            bottom: 6px;
+            right: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-emerald);
+            background: rgba(16, 185, 129, 0.12);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+
+        .item-weight {
+            position: absolute;
+            top: 6px;
+            left: 8px;
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-hover);
+            border-radius: var(--radius-xl);
+            width: 90%;
+            max-width: 680px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: scale(0.95);
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--accent-rose);
+        }
+
+        .modal-body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .modal-nav {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .modal-nav-tab {
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Console Terminal */
+        .terminal-window {
+            background: #05070a;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: 'JetBrains Mono', monospace;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: 380px;
+            overflow-y: auto;
+        }
+
+        .terminal-line {
+            font-size: 13px;
+            line-height: 1.5;
+            display: flex;
+            gap: 10px;
+        }
+
+        .line-time {
+            color: var(--text-dim);
+            user-select: none;
+        }
+
+        .line-info { color: var(--accent-cyan); }
+        .line-success { color: var(--accent-emerald); }
+        .line-warn { color: var(--accent-amber); }
+        .line-error { color: var(--accent-rose); }
+
+        .terminal-input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 10px 14px;
+            margin-top: 12px;
+        }
+
+        .terminal-input-wrap span {
+            color: var(--accent-emerald);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+
+        .terminal-input-wrap input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+        }
+
+        /* Tab Pane */
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 13px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="brand-info">
+                <h2>QBCore Admin</h2>
+                <span>Nexus OS v2.0</span>
+            </div>
+        </div>
+
+        <span class="nav-label">Visão & Controle</span>
+        <ul class="nav-menu">
+            <li class="nav-item active" onclick="switchTab('dashboard', this)">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Visão Geral</span>
+            </li>
+            <li class="nav-item" onclick="switchTab('players', this)">
+                <i class="fa-solid fa-users"></i>
+                <span>Jogadores Online</span>
+                <span class="badge-count" id="playerCountBadge">42</span>
+            </li>
+        </ul>
+
+        <span class="nav-label">Inventários & Itens</span>
+        <ul class="nav-menu">
+            <li class="nav-item" onclick="switchTab('inventory', this)">
+                <i class="fa-solid fa-backpack"></i>
+                <span>Inventários de Players</span>
+            </li>
+            <li class="nav-item" onclick="switchTab('chests', this)">
+                <i class="fa-solid fa-box-archive"></i>
+                <span>Baús & Stashes</span>
+                <span class="badge-count" style="color: var(--accent-cyan);">Coords</span>
+            </li>
+        </ul>
+
+        <span class="nav-label">Auditoria & Sistema</span>
+        <ul class="nav-menu">
+            <li class="nav-item" onclick="switchTab('logs', this)">
+                <i class="fa-solid fa-scroll"></i>
+                <span>Central de Logs</span>
+            </li>
+            <li class="nav-item" onclick="switchTab('rcon', this)">
+                <i class="fa-solid fa-terminal"></i>
+                <span>Console RCON</span>
+            </li>
+            <li class="nav-item" onclick="switchTab('staff', this)">
+                <i class="fa-solid fa-user-shield"></i>
+                <span>Equipe & Permissões</span>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="admin-avatar">CA</div>
+            <div class="admin-details">
+                <h4>Caliana_Aparecida</h4>
+                <span>God / Fundador</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-title">
+                <h1 id="pageTitle">Dashboard & Métricas</h1>
+                <p>Gerenciamento em tempo real do servidor QBCore</p>
+            </div>
+
+            <div class="quick-actions">
+                <button class="btn btn-outline" onclick="triggerAnnounceModal()">
+                    <i class="fa-solid fa-bullhorn"></i> Anúncio Global
+                </button>
+                <button class="btn btn-outline" onclick="toggleMaintenance()">
+                    <i class="fa-solid fa-wrench"></i> Modo Manutenção
+                </button>
+                <button class="btn btn-danger" onclick="confirmRestart()">
+                    <i class="fa-solid fa-rotate"></i> Reiniciar Servidor
+                </button>
+            </div>
+        </header>
+
+        <!-- ============================================== -->
+        <!-- TAB 1: VISÃO GERAL (DASHBOARD)                 -->
+        <!-- ============================================== -->
+        <div id="tab-dashboard" class="tab-pane active">
+            <div class="metrics-grid">
+                <div class="metric-card" style="--card-accent: var(--accent-emerald);">
+                    <div class="metric-top">
+                        <span>Jogadores Online</span>
+                        <div class="metric-icon"><i class="fa-solid fa-users"></i></div>
+                    </div>
+                    <div class="metric-val">42 / 64</div>
+                    <div class="metric-sub positive">
+                        <i class="fa-solid fa-arrow-trend-up"></i> +14% vs dia anterior
+                    </div>
+                </div>
+
+                <div class="metric-card" style="--card-accent: var(--accent-cyan);">
+                    <div class="metric-top">
+                        <span>Uptime do Servidor</span>
+                        <div class="metric-icon"><i class="fa-solid fa-server"></i></div>
+                    </div>
+                    <div class="metric-val">19h 45m</div>
+                    <div class="metric-sub">
+                        <i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> 100% Estabilidade
+                    </div>
+                </div>
+
+                <div class="metric-card" style="--card-accent: var(--accent-purple);">
+                    <div class="metric-top">
+                        <span>Ping Médio Global</span>
+                        <div class="metric-icon"><i class="fa-solid fa-network-wired"></i></div>
+                    </div>
+                    <div class="metric-val">24 ms</div>
+                    <div class="metric-sub">
+                        <i class="fa-solid fa-bolt" style="color: var(--accent-cyan);"></i> Latência excelente
+                    </div>
+                </div>
+
+                <div class="metric-card" style="--card-accent: var(--accent-amber);">
+                    <div class="metric-top">
+                        <span>Economia Ativa</span>
+                        <div class="metric-icon"><i class="fa-solid fa-vault"></i></div>
+                    </div>
+                    <div class="metric-val">R$ 14.8M</div>
+                    <div class="metric-sub">
+                        <i class="fa-solid fa-coins"></i> Total em circulação
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-row" style="margin-top: 24px;">
+                <div class="dashboard-box">
+                    <div class="box-header">
+                        <h3><i class="fa-solid fa-chart-line"></i> Pico de Jogadores (Últimas 24 Horas)</h3>
+                        <div class="box-tools">
+                            <button class="pill-tab active">24h</button>
+                            <button class="pill-tab">7 Dias</button>
+                            <button class="pill-tab">30 Dias</button>
+                        </div>
+                    </div>
+                    <div style="height: 250px;">
+                        <canvas id="playersChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="dashboard-box">
+                    <div class="box-header">
+                        <h3><i class="fa-solid fa-microchip"></i> Recursos do Servidor</h3>
+                        <span style="font-size: 11px; color: var(--accent-emerald);">NORMAL</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 18px; margin-top: 10px;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px;">
+                                <span>Uso de CPU</span>
+                                <span style="color: var(--accent-cyan);">24%</span>
+                            </div>
+                            <div style="height: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 20px; overflow: hidden;">
+                                <div style="height: 100%; width: 24%; background: var(--accent-cyan); border-radius: 20px;"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px;">
+                                <span>Memória RAM (4.2GB / 16GB)</span>
+                                <span style="color: var(--primary);">28%</span>
+                            </div>
+                            <div style="height: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 20px; overflow: hidden;">
+                                <div style="height: 100%; width: 28%; background: var(--primary); border-radius: 20px;"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px;">
+                                <span>Banco de Dados (MariaDB)</span>
+                                <span style="color: var(--accent-emerald);">Conectado (10.4.32)</span>
+                            </div>
+                            <div style="height: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 20px; overflow: hidden;">
+                                <div style="height: 100%; width: 100%; background: var(--accent-emerald); border-radius: 20px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- TAB 2: JOGADORES ONLINE                        -->
+        <!-- ============================================== -->
+        <div id="tab-players" class="tab-pane">
+            <div class="dashboard-box">
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="playerSearchInput" onkeyup="filterPlayerTable()" placeholder="Buscar por ID, Nick, CitizenID ou IP...">
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-outline" onclick="showToast('Lista de jogadores sincronizada com o servidor!', 'info')">
+                            <i class="fa-solid fa-rotate-right"></i> Atualizar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="custom-table" id="playersTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Jogador</th>
+                                <th>CitizenID</th>
+                                <th>Ping</th>
+                                <th>Cargo</th>
+                                <th>Carteira / Banco</th>
+                                <th>Ações Rápidas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>#1</strong></td>
+                                <td>
+                                    <div class="player-badge">
+                                        <div class="player-pfp" style="background: linear-gradient(135deg, #a855f7, #6366f1); color: #fff;">CA</div>
+                                        <div>
+                                            <strong>Li Dela</strong>
+                                            <div style="font-size: 11px; color: var(--text-dim);">Caliana_Aparecida</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><code>WZJ46566</code></td>
+                                <td><span style="color: var(--accent-emerald); font-weight: 600;">14 ms</span></td>
+                                <td><span class="role-pill role-god">GOD</span></td>
+                                <td>R$ 5.000 / R$ 50.000</td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="openPlayerModal(1, 'Li Dela', 'WZJ46566', 'god')">
+                                        <i class="fa-solid fa-sliders"></i> Gerenciar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#2</strong></td>
+                                <td>
+                                    <div class="player-badge">
+                                        <div class="player-pfp">RD</div>
+                                        <div>
+                                            <strong>Rodrigo Santos</strong>
+                                            <div style="font-size: 11px; color: var(--text-dim);">Rodrigo_BR</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><code>ABC12345</code></td>
+                                <td><span style="color: var(--accent-emerald); font-weight: 600;">28 ms</span></td>
+                                <td><span class="role-pill role-admin">ADMIN</span></td>
+                                <td>R$ 1.200 / R$ 14.500</td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="openPlayerModal(2, 'Rodrigo Santos', 'ABC12345', 'admin')">
+                                        <i class="fa-solid fa-sliders"></i> Gerenciar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#3</strong></td>
+                                <td>
+                                    <div class="player-badge">
+                                        <div class="player-pfp">MS</div>
+                                        <div>
+                                            <strong>Marcos Silva</strong>
+                                            <div style="font-size: 11px; color: var(--text-dim);">Marcos_Gamer</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><code>KJL99412</code></td>
+                                <td><span style="color: var(--accent-amber); font-weight: 600;">64 ms</span></td>
+                                <td><span class="role-pill role-vip">VIP OURO</span></td>
+                                <td>R$ 800 / R$ 22.000</td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="openPlayerModal(3, 'Marcos Silva', 'KJL99412', 'vip')">
+                                        <i class="fa-solid fa-sliders"></i> Gerenciar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#4</strong></td>
+                                <td>
+                                    <div class="player-badge">
+                                        <div class="player-pfp">GM</div>
+                                        <div>
+                                            <strong>Gabriel Mendes</strong>
+                                            <div style="font-size: 11px; color: var(--text-dim);">Biel_RP</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><code>POX77182</code></td>
+                                <td><span style="color: var(--accent-emerald); font-weight: 600;">18 ms</span></td>
+                                <td><span class="role-pill role-player">PLAYER</span></td>
+                                <td>R$ 250 / R$ 3.400</td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="openPlayerModal(4, 'Gabriel Mendes', 'POX77182', 'player')">
+                                        <i class="fa-solid fa-sliders"></i> Gerenciar
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- TAB 3: INVENTÁRIOS DE JOGADORES (SEPARADA)     -->
+        <!-- ============================================== -->
+        <div id="tab-inventory" class="tab-pane">
+            <div class="dashboard-box">
+                <div class="filter-bar">
+                    <div class="search-box" style="max-width: 480px;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="invSearchIdInput" value="1" placeholder="Digite o ID in-game do jogador (ex: 1, 2) ou CitizenID...">
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-primary" onclick="searchPlayerInventory()">
+                            <i class="fa-solid fa-magnifying-glass"></i> Buscar Inventário
+                        </button>
+                        <button class="btn btn-emerald" onclick="openAddItemModal()">
+                            <i class="fa-solid fa-plus"></i> Dar Item
+                        </button>
+                        <button class="btn btn-danger" onclick="clearPlayerInventoryConfirm()">
+                            <i class="fa-solid fa-trash-can"></i> Limpar Tudo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Player Card Banner -->
+                <div class="player-info-card" id="activePlayerCard">
+                    <div class="player-info-left">
+                        <div class="player-info-avatar">CA</div>
+                        <div class="player-info-meta">
+                            <h3 id="invPlayerName">Li Dela <span class="role-pill role-god">ID #1</span></h3>
+                            <span>CitizenID: <code id="invCitizenId">WZJ46566</code> | Steam: Caliana_Aparecida | Licença: 2b16303...</span>
+                        </div>
+                    </div>
+
+                    <div class="player-info-stats">
+                        <div class="p-stat-box">
+                            <label>Peso Total</label>
+                            <strong style="color: var(--accent-cyan);" id="invWeight">4.2 / 120.0 Kg</strong>
+                        </div>
+                        <div class="p-stat-box">
+                            <label>Em Mãos</label>
+                            <strong style="color: var(--accent-emerald);">R$ 5.000</strong>
+                        </div>
+                        <div class="p-stat-box">
+                            <label>Banco</label>
+                            <strong style="color: var(--primary);">R$ 50.000</strong>
+                        </div>
+                        <div class="p-stat-box">
+                            <label>Slots Ocupados</label>
+                            <strong id="invOccupiedSlots">5 / 40</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 40-Slot QBCore Grid -->
+                <div class="inventory-grid" id="playerInventoryGrid">
+                    <!-- Slot 1 -->
+                    <div class="item-slot has-item" onclick="inspectSlotItem('phone', 'LB Phone', 1, 1000, 1)">
+                        <div class="item-weight">1.0kg</div>
+                        <div class="item-icon" style="color: var(--primary);"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                        <div class="item-name">LB Phone</div>
+                        <div class="item-qty">x1</div>
+                    </div>
+                    <!-- Slot 2 -->
+                    <div class="item-slot has-item" onclick="inspectSlotItem('id_card', 'Identidade', 1, 200, 2)">
+                        <div class="item-weight">0.2kg</div>
+                        <div class="item-icon" style="color: var(--accent-cyan);"><i class="fa-solid fa-id-card"></i></div>
+                        <div class="item-name">Identidade</div>
+                        <div class="item-qty">x1</div>
+                    </div>
+                    <!-- Slot 3 -->
+                    <div class="item-slot has-item" onclick="inspectSlotItem('driver_license', 'CNH', 1, 200, 3)">
+                        <div class="item-weight">0.2kg</div>
+                        <div class="item-icon" style="color: var(--accent-cyan);"><i class="fa-solid fa-address-card"></i></div>
+                        <div class="item-name">CNH</div>
+                        <div class="item-qty">x1</div>
+                    </div>
+                    <!-- Slot 4 -->
+                    <div class="item-slot has-item" onclick="inspectSlotItem('water_bottle', 'Garrafa de Água', 4, 1200, 4)">
+                        <div class="item-weight">1.2kg</div>
+                        <div class="item-icon" style="color: var(--accent-cyan);"><i class="fa-solid fa-bottle-water"></i></div>
+                        <div class="item-name">Água</div>
+                        <div class="item-qty">x4</div>
+                    </div>
+                    <!-- Slot 5 -->
+                    <div class="item-slot has-item" onclick="inspectSlotItem('sandwich', 'Sanduíche', 3, 600, 5)">
+                        <div class="item-weight">0.6kg</div>
+                        <div class="item-icon" style="color: var(--accent-amber);"><i class="fa-solid fa-burger"></i></div>
+                        <div class="item-name">Sanduíche</div>
+                        <div class="item-qty">x3</div>
+                    </div>
+                    <!-- Empty Slots 6 to 30 generated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- TAB 4: BAÚS & STASHES (COM COORDENADAS)        -->
+        <!-- ============================================== -->
+        <div id="tab-chests" class="tab-pane">
+            <div class="dashboard-box">
+                <div class="filter-bar">
+                    <div class="search-box" style="max-width: 480px;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="chestSearchInput" value="1" placeholder="Pesquisar baús pelo ID in-game da pessoa (ex: 1, 2) ou CitizenID...">
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-primary" onclick="searchPlayerChests()">
+                            <i class="fa-solid fa-magnifying-glass"></i> Buscar Todos os Baús
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Result Header for Chests -->
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                    <div style="font-size: 14px; color: var(--text-muted);">
+                        Exibindo todos os baús vinculados a: <strong style="color: var(--text-main);" id="chestsOwnerText">Li Dela (ID #1 | CitizenID: WZJ46566)</strong>
+                    </div>
+                    <span class="badge-count" style="font-size: 12px; padding: 4px 12px;" id="chestsTotalCount">4 Baús Encontrados</span>
+                </div>
+
+                <!-- List of Chests / Stashes with Exact Coordinates -->
+                <div class="stash-cards-grid" id="stashesListContainer">
+                    <!-- Stash 1: Apartamento -->
+                    <div class="stash-card">
+                        <div class="stash-card-header">
+                            <div class="stash-title-group">
+                                <div class="stash-icon"><i class="fa-solid fa-building"></i></div>
+                                <div>
+                                    <h4>Baú do Apartamento</h4>
+                                    <span>ID Técnico: <code>apartment_WZJ46566</code></span>
+                                </div>
+                            </div>
+                            <span class="role-pill role-player">Apartamento</span>
+                        </div>
+
+                        <!-- Coordenadas Exatas -->
+                        <div class="stash-coord-box">
+                            <div>
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span class="stash-coord-text">X: -614.86, Y: -970.68, Z: 24.23</span>
+                            </div>
+                            <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="copyCoords('-614.86, -970.68, 24.23')">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+
+                        <div class="stash-stats">
+                            <span><i class="fa-solid fa-weight-hanging"></i> 34.2 / 500.0 Kg</span>
+                            <span><i class="fa-solid fa-cubes"></i> 8 Itens Guardados</span>
+                        </div>
+
+                        <div class="stash-actions">
+                            <button class="btn btn-outline" onclick="teleportToStash('-614.86, -970.68, 24.23', 'Baú do Apartamento')">
+                                <i class="fa-solid fa-paper-plane" style="color: var(--accent-cyan);"></i> Teleportar (/tp)
+                            </button>
+                            <button class="btn btn-primary" onclick="openStashModal('apartment_WZJ46566', 'Baú do Apartamento', 'X: -614.86, Y: -970.68, Z: 24.23')">
+                                <i class="fa-solid fa-box-open"></i> Inspecionar Itens
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stash 2: Residência / Casa -->
+                    <div class="stash-card">
+                        <div class="stash-card-header">
+                            <div class="stash-title-group">
+                                <div class="stash-icon" style="color: var(--accent-emerald);"><i class="fa-solid fa-house-chimney"></i></div>
+                                <div>
+                                    <h4>Casa Vinewood Hills #14</h4>
+                                    <span>ID Técnico: <code>house_stash_14</code></span>
+                                </div>
+                            </div>
+                            <span class="role-pill role-vip">Residência</span>
+                        </div>
+
+                        <!-- Coordenadas Exatas -->
+                        <div class="stash-coord-box">
+                            <div>
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span class="stash-coord-text">X: -174.45, Y: 492.12, Z: 130.40</span>
+                            </div>
+                            <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="copyCoords('-174.45, 492.12, 130.40')">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+
+                        <div class="stash-stats">
+                            <span><i class="fa-solid fa-weight-hanging"></i> 112.5 / 1000.0 Kg</span>
+                            <span><i class="fa-solid fa-cubes"></i> 15 Itens Guardados</span>
+                        </div>
+
+                        <div class="stash-actions">
+                            <button class="btn btn-outline" onclick="teleportToStash('-174.45, 492.12, 130.40', 'Casa Vinewood #14')">
+                                <i class="fa-solid fa-paper-plane" style="color: var(--accent-cyan);"></i> Teleportar (/tp)
+                            </button>
+                            <button class="btn btn-primary" onclick="openStashModal('house_stash_14', 'Casa Vinewood #14', 'X: -174.45, Y: 492.12, Z: 130.40')">
+                                <i class="fa-solid fa-box-open"></i> Inspecionar Itens
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stash 3: Porta-Malas de Veículo -->
+                    <div class="stash-card">
+                        <div class="stash-card-header">
+                            <div class="stash-title-group">
+                                <div class="stash-icon" style="color: var(--accent-amber);"><i class="fa-solid fa-car-side"></i></div>
+                                <div>
+                                    <h4>Porta-Malas (Sultan RS)</h4>
+                                    <span>Placa: <code>QBC 7891</code></span>
+                                </div>
+                            </div>
+                            <span class="role-pill role-admin">Veículo</span>
+                        </div>
+
+                        <!-- Coordenadas Exatas do Carro -->
+                        <div class="stash-coord-box">
+                            <div>
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span class="stash-coord-text">X: 215.30, Y: -810.15, Z: 30.70</span>
+                            </div>
+                            <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="copyCoords('215.30, -810.15, 30.70')">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+
+                        <div class="stash-stats">
+                            <span><i class="fa-solid fa-weight-hanging"></i> 48.0 / 80.0 Kg</span>
+                            <span><i class="fa-solid fa-cubes"></i> 6 Itens no Bagageiro</span>
+                        </div>
+
+                        <div class="stash-actions">
+                            <button class="btn btn-outline" onclick="teleportToStash('215.30, -810.15, 30.70', 'Veículo Sultan RS')">
+                                <i class="fa-solid fa-paper-plane" style="color: var(--accent-cyan);"></i> Teleportar (/tp)
+                            </button>
+                            <button class="btn btn-primary" onclick="openStashModal('trunk_QBC7891', 'Porta-Malas Sultan RS', 'X: 215.30, Y: -810.15, Z: 30.70')">
+                                <i class="fa-solid fa-box-open"></i> Inspecionar Itens
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stash 4: Armário de Trabalho / Facção -->
+                    <div class="stash-card">
+                        <div class="stash-card-header">
+                            <div class="stash-title-group">
+                                <div class="stash-icon" style="color: var(--accent-rose);"><i class="fa-solid fa-user-tie"></i></div>
+                                <div>
+                                    <h4>Armário Pessoal de Trabalho</h4>
+                                    <span>ID Técnico: <code>stash_police_locker_WZJ46566</code></span>
+                                </div>
+                            </div>
+                            <span class="role-pill role-god">Facção / Job</span>
+                        </div>
+
+                        <!-- Coordenadas Exatas -->
+                        <div class="stash-coord-box">
+                            <div>
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span class="stash-coord-text">X: 450.12, Y: -990.45, Z: 30.68</span>
+                            </div>
+                            <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="copyCoords('450.12, -990.45, 30.68')">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+
+                        <div class="stash-stats">
+                            <span><i class="fa-solid fa-weight-hanging"></i> 22.0 / 200.0 Kg</span>
+                            <span><i class="fa-solid fa-cubes"></i> 4 Itens</span>
+                        </div>
+
+                        <div class="stash-actions">
+                            <button class="btn btn-outline" onclick="teleportToStash('450.12, -990.45, 30.68', 'Armário Pessoal')">
+                                <i class="fa-solid fa-paper-plane" style="color: var(--accent-cyan);"></i> Teleportar (/tp)
+                            </button>
+                            <button class="btn btn-primary" onclick="openStashModal('stash_police_locker_WZJ46566', 'Armário Pessoal', 'X: 450.12, Y: -990.45, Z: 30.68')">
+                                <i class="fa-solid fa-box-open"></i> Inspecionar Itens
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- TAB 5: CENTRAL DE LOGS                         -->
+        <!-- ============================================== -->
+        <div id="tab-logs" class="tab-pane">
+            <div class="dashboard-box">
+                <div class="filter-bar">
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="pill-tab active" onclick="filterLogs('all', this)">Todos</button>
+                        <button class="pill-tab" onclick="filterLogs('kill', this)"><i class="fa-solid fa-skull"></i> Mortes</button>
+                        <button class="pill-tab" onclick="filterLogs('economy', this)"><i class="fa-solid fa-money-bill-wave"></i> Economia</button>
+                        <button class="pill-tab" onclick="filterLogs('admin', this)"><i class="fa-solid fa-shield-halved"></i> Comandos Staff</button>
+                        <button class="pill-tab" onclick="filterLogs('connection', this)"><i class="fa-solid fa-plug"></i> Conexões</button>
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-outline" onclick="exportLogsCSV()">
+                            <i class="fa-solid fa-file-csv"></i> Exportar CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive" style="margin-top: 10px;">
+                    <table class="custom-table" id="logsTable">
+                        <thead>
+                            <tr>
+                                <th>Horário</th>
+                                <th>Categoria</th>
+                                <th>Origem / Jogador</th>
+                                <th>Evento & Detalhes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-category="admin">
+                                <td><code>09:24:12</code></td>
+                                <td><span class="role-pill role-god">ADMIN COMMAND</span></td>
+                                <td><strong>Caliana_Aparecida (ID #1)</strong></td>
+                                <td>Executou <code>/nc</code> (NoClip ativado)</td>
+                            </tr>
+                            <tr data-category="economy">
+                                <td><code>09:21:40</code></td>
+                                <td><span class="role-pill role-player">ECONOMIA</span></td>
+                                <td><strong>Rodrigo Santos (ID #2)</strong></td>
+                                <td>Transferiu R$ 1.500 via LB-Phone para Marcos Silva (ID #3)</td>
+                            </tr>
+                            <tr data-category="connection">
+                                <td><code>09:18:05</code></td>
+                                <td><span class="role-pill role-vip">CONEXÃO</span></td>
+                                <td><strong>Li Dela (ID #1)</strong></td>
+                                <td>Entrou no servidor (CitizenID: <code>WZJ46566</code>, Ping: 14ms)</td>
+                            </tr>
+                            <tr data-category="kill">
+                                <td><code>09:12:33</code></td>
+                                <td><span class="role-pill role-god">MORTE / KILL</span></td>
+                                <td><strong>Gabriel Mendes (ID #4)</strong></td>
+                                <td>Morreu por ferimento de arma de fogo (Arma: <code>WEAPON_PISTOL</code>) por Rodrigo Santos</td>
+                            </tr>
+                            <tr data-category="admin">
+                                <td><code>09:05:10</code></td>
+                                <td><span class="role-pill role-god">ADMIN COMMAND</span></td>
+                                <td><strong>Caliana_Aparecida (ID #1)</strong></td>
+                                <td>Usou <code>/revive 4</code> no jogador Gabriel Mendes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- TAB 6: CONSOLE RCON & MACROS                   -->
+        <!-- ============================================== -->
+        <div id="tab-rcon" class="tab-pane">
+            <div class="dashboard-box">
+                <div class="box-header">
+                    <h3><i class="fa-solid fa-terminal"></i> Console Remoto FXServer (RCON)</h3>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="clearTerminal()">Limpar Console</button>
+                    </div>
+                </div>
+
+                <div class="terminal-window" id="terminalWindow">
+                    <div class="terminal-line"><span class="line-time">[09:11:30]</span> <span class="line-info">[FXServer]</span> Inicializando artefatos FXServer Cerulean v3095...</div>
+                    <div class="terminal-line"><span class="line-time">[09:11:32]</span> <span class="line-success">[oxmysql]</span> Conexão com MariaDB (10.4.32) estabelecida com sucesso!</div>
+                    <div class="terminal-line"><span class="line-time">[09:11:34]</span> <span class="line-success">[qb-core]</span> QBCore Framework 1.3.0 carregado!</div>
+                    <div class="terminal-line"><span class="line-time">[09:11:35]</span> <span class="line-success">[lb-phone]</span> LB-Phone iniciado (Framework: qb, Voz: pma-voice, Idioma: pt-br)</div>
+                    <div class="terminal-line"><span class="line-time">[09:13:00]</span> <span class="line-info">[connectqueue]</span> Jogador Li Dela conectou ao servidor (ID 1).</div>
+                </div>
+
+                <div class="terminal-input-wrap">
+                    <span>fivem@server:~$</span>
+                    <input type="text" id="terminalInput" placeholder="Digite um comando (ex: giveitem 1 phone 1, weather extrasunny, kick 2)..." onkeydown="handleTerminalCommand(event)">
+                    <button class="btn btn-primary" onclick="sendTerminalCommand()">Enviar</button>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4 style="font-size: 13px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 12px;">Macros & Atalhos Rápidos</h4>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-outline" onclick="runMacro('dvall')">
+                            <i class="fa-solid fa-car-burst"></i> /dvall (Limpar Veículos Desocupados)
+                        </button>
+                        <button class="btn btn-outline" onclick="runMacro('weather extrasunny')">
+                            <i class="fa-solid fa-sun"></i> Tempo Ensolarado
+                        </button>
+                        <button class="btn btn-outline" onclick="runMacro('restart lb-phone')">
+                            <i class="fa-solid fa-mobile-screen"></i> Reiniciar LB-Phone
+                        </button>
+                        <button class="btn btn-outline" onclick="runMacro('saveall')">
+                            <i class="fa-solid fa-floppy-disk"></i> Salvar Todos os Players
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- TAB 7: EQUIPE & PERMISSÕES                     -->
+        <!-- ============================================== -->
+        <div id="tab-staff" class="tab-pane">
+            <div class="dashboard-box">
+                <div class="box-header">
+                    <h3><i class="fa-solid fa-shield-virus"></i> Níveis de Permissões da Equipe</h3>
+                    <button class="btn btn-primary" onclick="showToast('Novo cargo criado!', 'success')">
+                        <i class="fa-solid fa-plus"></i> Criar Novo Cargo
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Cargo</th>
+                                <th>NoClip / God</th>
+                                <th>Economia / Itens</th>
+                                <th>Kick / Ban</th>
+                                <th>Ver Logs</th>
+                                <th>Console RCON</th>
+                                <th>Membros</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="role-pill role-god">GOD / OWNER</span></td>
+                                <td><i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> Total</td>
+                                <td><i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> Total</td>
+                                <td><i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> Total</td>
+                                <td><i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> Total</td>
+                                <td><i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> Total</td>
+                                <td><strong>1 Membro</strong></td>
+                            </tr>
+                            <tr>
+                                <td><span class="role-pill role-admin">ADMINISTRADOR</span></td>
+                                <td><i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> Sim</td>
+                                <td><i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> Restrito</td>
+                                <td><i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> Até 7 Dias</td>
+                                <td><i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> Sim</td>
+                                <td><i class="fa-solid fa-circle-xmark" style="color: var(--accent-rose);"></i> Não</td>
+                                <td><strong>2 Membros</strong></td>
+                            </tr>
+                            <tr>
+                                <td><span class="role-pill role-vip">MODERADOR</span></td>
+                                <td><i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> Sim</td>
+                                <td><i class="fa-solid fa-circle-xmark" style="color: var(--accent-rose);"></i> Não</td>
+                                <td><i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> Kick/Warn</td>
+                                <td><i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> Sim</td>
+                                <td><i class="fa-solid fa-circle-xmark" style="color: var(--accent-rose);"></i> Não</td>
+                                <td><strong>4 Membros</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Ação do Jogador -->
+    <div class="modal-overlay" id="playerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-user-gear" style="color: var(--primary);"></i> <span id="modalPlayerTitle">Gerenciar Jogador</span></h2>
+                <button class="modal-close" onclick="closePlayerModal()">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-nav">
+                    <button class="modal-nav-tab active" onclick="switchModalTab('m-roles', this)">Cargos</button>
+                    <button class="modal-nav-tab" onclick="switchModalTab('m-eco', this)">Economia & Itens</button>
+                    <button class="modal-nav-tab" onclick="switchModalTab('m-actions', this)">Teleporte & Saúde</button>
+                    <button class="modal-nav-tab" onclick="switchModalTab('m-punish', this)">Punições</button>
+                </div>
+
+                <div id="subtab-m-roles" class="modal-subtab" style="display: block;">
+                    <div class="form-group">
+                        <label>Definir Grupo de Permissão</label>
+                        <select class="form-control" id="playerRoleSelect">
+                            <option value="god">God (Acesso Total / Fundador)</option>
+                            <option value="admin">Administrador</option>
+                            <option value="mod">Moderador</option>
+                            <option value="vip">VIP</option>
+                            <option value="user">Player Comum</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="subtab-m-eco" class="modal-subtab" style="display: none;">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Adicionar Dinheiro em Mãos (R$)</label>
+                            <input type="number" class="form-control" placeholder="Ex: 5000" id="moneyCashInput">
+                        </div>
+                        <div class="form-group">
+                            <label>Adicionar Saldo no Banco (R$)</label>
+                            <input type="number" class="form-control" placeholder="Ex: 50000" id="moneyBankInput">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="subtab-m-actions" class="modal-subtab" style="display: none;">
+                    <div class="grid-2">
+                        <button class="btn btn-outline" onclick="executePlayerAction('Reviver')">
+                            <i class="fa-solid fa-heart-pulse" style="color: var(--accent-emerald);"></i> Reviver Jogador
+                        </button>
+                        <button class="btn btn-outline" onclick="executePlayerAction('Curar')">
+                            <i class="fa-solid fa-kit-medical" style="color: var(--accent-cyan);"></i> Curar 100%
+                        </button>
+                    </div>
+                    <div class="grid-2" style="margin-top: 12px;">
+                        <button class="btn btn-outline" onclick="executePlayerAction('Ir até')">
+                            <i class="fa-solid fa-location-arrow"></i> Teletransportar até ele
+                        </button>
+                        <button class="btn btn-outline" onclick="executePlayerAction('Puxar')">
+                            <i class="fa-solid fa-magnet"></i> Puxar até mim
+                        </button>
+                    </div>
+                </div>
+
+                <div id="subtab-m-punish" class="modal-subtab" style="display: none;">
+                    <div class="form-group">
+                        <label>Tipo de Punição</label>
+                        <select class="form-control">
+                            <option value="warn">Aviso (Warn)</option>
+                            <option value="kick">Expulsar (Kick)</option>
+                            <option value="mute">Mute Chat/Voz</option>
+                            <option value="tempban">Ban Temporário</option>
+                            <option value="permaban">Ban Permanente</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label>Motivo</label>
+                        <input type="text" class="form-control" placeholder="Ex: Anti-RP, Desrespeito">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closePlayerModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="savePlayerModal()">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Inspeção de Baú -->
+    <div class="modal-overlay" id="stashInspectModal">
+        <div class="modal-content" style="max-width: 780px;">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-box-open" style="color: var(--accent-cyan);"></i> <span id="stashModalTitle">Conteúdo do Baú</span></h2>
+                <button class="modal-close" onclick="closeStashModal()">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                    <div style="font-size: 13px;">
+                        Coordenadas: <code style="color: var(--accent-cyan);" id="stashModalCoords">X: 0, Y: 0, Z: 0</code>
+                    </div>
+                    <button class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="copyModalCoords()">
+                        <i class="fa-regular fa-copy"></i> Copiar Coords
+                    </button>
+                </div>
+
+                <div class="inventory-grid" id="stashItemsGrid" style="margin-top: 10px;">
+                    <div class="item-slot has-item">
+                        <div class="item-weight">2.5kg</div>
+                        <div class="item-icon" style="color: var(--accent-rose);"><i class="fa-solid fa-gun"></i></div>
+                        <div class="item-name">Combat Pistol</div>
+                        <div class="item-qty">x2</div>
+                    </div>
+                    <div class="item-slot has-item">
+                        <div class="item-weight">0.5kg</div>
+                        <div class="item-icon" style="color: var(--accent-amber);"><i class="fa-solid fa-cubes-stacked"></i></div>
+                        <div class="item-name">Munição 9mm</div>
+                        <div class="item-qty">x120</div>
+                    </div>
+                    <div class="item-slot has-item">
+                        <div class="item-weight">5.0kg</div>
+                        <div class="item-icon" style="color: var(--accent-emerald);"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                        <div class="item-name">Dinheiro Sujo</div>
+                        <div class="item-qty">x50.000</div>
+                    </div>
+                    <div class="item-slot has-item">
+                        <div class="item-weight">0.8kg</div>
+                        <div class="item-icon" style="color: var(--accent-purple);"><i class="fa-solid fa-gem"></i></div>
+                        <div class="item-name">Diamante</div>
+                        <div class="item-qty">x4</div>
+                    </div>
+                    <div class="item-slot has-item">
+                        <div class="item-weight">0.2kg</div>
+                        <div class="item-icon" style="color: var(--accent-cyan);"><i class="fa-solid fa-key"></i></div>
+                        <div class="item-name">Chave Reserva</div>
+                        <div class="item-qty">x1</div>
+                    </div>
+                    <!-- Empty slots -->
+                    <div class="item-slot" style="opacity: 0.3;"><span style="color: var(--text-dim); font-size: 10px;">6</span></div>
+                    <div class="item-slot" style="opacity: 0.3;"><span style="color: var(--text-dim); font-size: 10px;">7</span></div>
+                    <div class="item-slot" style="opacity: 0.3;"><span style="color: var(--text-dim); font-size: 10px;">8</span></div>
+                    <div class="item-slot" style="opacity: 0.3;"><span style="color: var(--text-dim); font-size: 10px;">9</span></div>
+                    <div class="item-slot" style="opacity: 0.3;"><span style="color: var(--text-dim); font-size: 10px;">10</span></div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeStashModal()">Fechar</button>
+                <button class="btn btn-primary" onclick="showToast('Itens do baú atualizados!', 'success'); closeStashModal();">
+                    <i class="fa-solid fa-floppy-disk"></i> Salvar Alterações
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Inserir Item no Inventário do Jogador -->
+    <div class="modal-overlay" id="addItemModal">
+        <div class="modal-content" style="max-width: 480px;">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-plus-circle" style="color: var(--accent-emerald);"></i> Dar Item ao Jogador</h2>
+                <button class="modal-close" onclick="closeAddItemModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Jogador Destino</label>
+                    <input type="text" class="form-control" value="Li Dela (ID #1)" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Nome do Item (Item ID)</label>
+                    <input type="text" class="form-control" placeholder="Ex: phone, weapon_pistol, armor, bread..." id="modalItemName">
+                </div>
+                <div class="form-group">
+                    <label>Quantidade</label>
+                    <input type="number" class="form-control" value="1" min="1" id="modalItemAmount">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeAddItemModal()">Cancelar</button>
+                <button class="btn btn-emerald" onclick="confirmGiveItem()">
+                    <i class="fa-solid fa-check"></i> Enviar Item
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Init Chart.js
+        const ctx = document.getElementById('playersChart').getContext('2d');
+        const playersChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['00h', '03h', '06h', '09h', '12h', '15h', '18h', '21h', 'Agora'],
+                datasets: [{
+                    label: 'Jogadores Conectados',
+                    data: [18, 12, 8, 15, 29, 38, 48, 52, 42],
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#06b6d4',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#64748b' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#64748b' }
+                    }
+                }
+            }
+        });
+
+        // Generate Empty slots for inventory
+        const invGrid = document.getElementById('playerInventoryGrid');
+        for (let i = 6; i <= 30; i++) {
+            const slot = document.createElement('div');
+            slot.className = 'item-slot';
+            slot.style.opacity = '0.35';
+            slot.innerHTML = `<span style="color: var(--text-dim); font-size: 11px;">Slot ${i}</span>`;
+            slot.onclick = () => openAddItemModal();
+            invGrid.appendChild(slot);
+        }
+
+        // Tab Navigation
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-pane').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            el.classList.add('active');
+
+            const titles = {
+                'dashboard': 'Dashboard & Métricas',
+                'players': 'Gerenciamento de Jogadores',
+                'inventory': 'Inventários de Jogadores (Busca por ID)',
+                'chests': 'Baús & Stashes com Coordenadas (Busca por ID)',
+                'logs': 'Central de Logs & Auditoria',
+                'rcon': 'Console Remoto RCON',
+                'staff': 'Equipe & Permissões'
+            };
+            document.getElementById('pageTitle').innerText = titles[tabId] || 'Painel Admin';
+        }
+
+        // Player Inventory Search Mockup
+        const mockPlayers = {
+            '1': {
+                name: 'Li Dela',
+                citizenid: 'WZJ46566',
+                nick: 'Caliana_Aparecida',
+                role: 'god',
+                weight: '4.2 / 120.0 Kg',
+                cash: 'R$ 5.000',
+                bank: 'R$ 50.000',
+                slots: 5,
+                chests: [
+                    { name: 'Baú do Apartamento', id: 'apartment_WZJ46566', type: 'Apartamento', coords: '-614.86, -970.68, 24.23', weight: '34.2 / 500.0 Kg', items: '8 Itens' },
+                    { name: 'Casa Vinewood Hills #14', id: 'house_stash_14', type: 'Residência', coords: '-174.45, 492.12, 130.40', weight: '112.5 / 1000.0 Kg', items: '15 Itens' },
+                    { name: 'Porta-Malas (Sultan RS)', id: 'trunk_QBC7891', type: 'Veículo', coords: '215.30, -810.15, 30.70', weight: '48.0 / 80.0 Kg', items: '6 Itens' },
+                    { name: 'Armário Pessoal de Trabalho', id: 'stash_police_locker_WZJ46566', type: 'Facção / Job', coords: '450.12, -990.45, 30.68', weight: '22.0 / 200.0 Kg', items: '4 Itens' }
+                ]
+            },
+            '2': {
+                name: 'Rodrigo Santos',
+                citizenid: 'ABC12345',
+                nick: 'Rodrigo_BR',
+                role: 'admin',
+                weight: '8.4 / 120.0 Kg',
+                cash: 'R$ 1.200',
+                bank: 'R$ 14.500',
+                slots: 7,
+                chests: [
+                    { name: 'Baú Apartamento Inicial', id: 'apartment_ABC12345', type: 'Apartamento', coords: '-614.86, -970.68, 24.23', weight: '18.0 / 500.0 Kg', items: '4 Itens' },
+                    { name: 'Porta-Malas (Karin Futo)', id: 'trunk_FUT9901', type: 'Veículo', coords: '118.40, -1045.20, 29.10', weight: '30.0 / 60.0 Kg', items: '5 Itens' }
+                ]
+            }
+        };
+
+        function searchPlayerInventory() {
+            const id = document.getElementById('invSearchIdInput').value.trim();
+            const player = mockPlayers[id];
+            if (player) {
+                document.getElementById('invPlayerName').innerHTML = `${player.name} <span class="role-pill role-${player.role}">ID #${id}</span>`;
+                document.getElementById('invCitizenId').innerText = player.citizenid;
+                document.getElementById('invWeight').innerText = player.weight;
+                document.getElementById('invOccupiedSlots').innerText = `${player.slots} / 40`;
+                showToast(`Inventário do ID #${id} (${player.name}) carregado com sucesso!`, 'success');
+            } else {
+                showToast(`Nenhum jogador encontrado com o ID '${id}'.`, 'warn');
+            }
+        }
+
+        function searchPlayerChests() {
+            const id = document.getElementById('chestSearchInput').value.trim();
+            const player = mockPlayers[id];
+            if (player) {
+                document.getElementById('chestsOwnerText').innerText = `${player.name} (ID #${id} | CitizenID: ${player.citizenid})`;
+                document.getElementById('chestsTotalCount').innerText = `${player.chests.length} Baús Encontrados`;
+                renderChests(player.chests);
+                showToast(`${player.chests.length} baús encontrados para o ID #${id}!`, 'success');
+            } else {
+                showToast(`Nenhum baú encontrado para o ID '${id}'.`, 'warn');
+            }
+        }
+
+        function renderChests(chests) {
+            const container = document.getElementById('stashesListContainer');
+            container.innerHTML = '';
+            chests.forEach(chest => {
+                const card = document.createElement('div');
+                card.className = 'stash-card';
+                card.innerHTML = `
+                    <div class="stash-card-header">
+                        <div class="stash-title-group">
+                            <div class="stash-icon"><i class="fa-solid fa-box-archive"></i></div>
+                            <div>
+                                <h4>${chest.name}</h4>
+                                <span>ID: <code>${chest.id}</code></span>
+                            </div>
+                        </div>
+                        <span class="role-pill role-player">${chest.type}</span>
+                    </div>
+
+                    <div class="stash-coord-box">
+                        <div>
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span class="stash-coord-text">X: ${chest.coords.split(',')[0]}, Y: ${chest.coords.split(',')[1]}, Z: ${chest.coords.split(',')[2]}</span>
+                        </div>
+                        <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="copyCoords('${chest.coords}')">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+
+                    <div class="stash-stats">
+                        <span><i class="fa-solid fa-weight-hanging"></i> ${chest.weight}</span>
+                        <span><i class="fa-solid fa-cubes"></i> ${chest.items}</span>
+                    </div>
+
+                    <div class="stash-actions">
+                        <button class="btn btn-outline" onclick="teleportToStash('${chest.coords}', '${chest.name}')">
+                            <i class="fa-solid fa-paper-plane" style="color: var(--accent-cyan);"></i> Teleportar (/tp)
+                        </button>
+                        <button class="btn btn-primary" onclick="openStashModal('${chest.id}', '${chest.name}', '${chest.coords}')">
+                            <i class="fa-solid fa-box-open"></i> Inspecionar Itens
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Coordinates helpers
+        function copyCoords(coords) {
+            navigator.clipboard.writeText(coords);
+            showToast(`Coordenadas copiadas: ${coords}`, 'info');
+        }
+
+        let currentModalCoords = '';
+        function copyModalCoords() {
+            copyCoords(currentModalCoords);
+        }
+
+        function teleportToStash(coords, name) {
+            showToast(`Comando de teletransporte enviado para ${name} (${coords})!`, 'success');
+            addTerminalLine(`[TELEPORT]: Admin teleportou para as coordenadas do baú ${name}: ${coords}`, 'line-info');
+        }
+
+        // Modals
+        function openStashModal(id, name, coords) {
+            currentModalCoords = coords;
+            document.getElementById('stashModalTitle').innerText = `${name} (${id})`;
+            document.getElementById('stashModalCoords').innerText = coords;
+            document.getElementById('stashInspectModal').classList.add('active');
+        }
+
+        function closeStashModal() {
+            document.getElementById('stashInspectModal').classList.remove('active');
+        }
+
+        function openAddItemModal() {
+            document.getElementById('addItemModal').classList.add('active');
+        }
+
+        function closeAddItemModal() {
+            document.getElementById('addItemModal').classList.remove('active');
+        }
+
+        function confirmGiveItem() {
+            const item = document.getElementById('modalItemName').value.trim();
+            const amount = document.getElementById('modalItemAmount').value;
+            if (!item) {
+                showToast('Informe o nome técnico do item!', 'warn');
+                return;
+            }
+            showToast(`Enviado x${amount} ${item} para o jogador Li Dela (ID #1)!`, 'success');
+            addTerminalLine(`[GIVEITEM]: Admin deu x${amount} '${item}' para o ID #1`, 'line-success');
+            closeAddItemModal();
+        }
+
+        function inspectSlotItem(item, label, qty, weight, slot) {
+            if (confirm(`Item: ${label} (x${qty}) no Slot #${slot}.\nDeseja remover este item do inventário do jogador?`)) {
+                showToast(`Item ${label} removido do slot #${slot}!`, 'warn');
+                addTerminalLine(`[REMOVEITEM]: Removido x${qty} '${item}' do inventário do ID #1`, 'line-warn');
+            }
+        }
+
+        function clearPlayerInventoryConfirm() {
+            if (confirm("Tem certeza que deseja LIMPAR TODO o inventário do jogador selecionado?")) {
+                showToast('Inventário do jogador foi esvaziado com sucesso!', 'warn');
+                addTerminalLine(`[CLEARINV]: Inventário do ID #1 foi completamente limpo.`, 'line-error');
+            }
+        }
+
+        // Player Modal
+        let currentPlayer = null;
+        function openPlayerModal(id, name, citizenid, role) {
+            currentPlayer = { id, name, citizenid, role };
+            document.getElementById('modalPlayerTitle').innerText = `Gerenciar ${name} (ID #${id})`;
+            document.getElementById('playerRoleSelect').value = role;
+            document.getElementById('playerModal').classList.add('active');
+        }
+
+        function closePlayerModal() {
+            document.getElementById('playerModal').classList.remove('active');
+        }
+
+        function switchModalTab(subtabId, el) {
+            document.querySelectorAll('.modal-subtab').forEach(st => st.style.display = 'none');
+            document.querySelectorAll('.modal-nav-tab').forEach(tb => tb.classList.remove('active'));
+
+            document.getElementById('subtab-' + subtabId).style.display = 'block';
+            el.classList.add('active');
+        }
+
+        function savePlayerModal() {
+            showToast(`Alterações salvas para o jogador ${currentPlayer.name}!`, 'success');
+            closePlayerModal();
+        }
+
+        function executePlayerAction(action) {
+            showToast(`${action} executado com sucesso em ${currentPlayer.name}!`, 'success');
+        }
+
+        // Toasts
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            const icons = {
+                'success': '<i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i>',
+                'info': '<i class="fa-solid fa-circle-info" style="color: var(--accent-cyan);"></i>',
+                'warn': '<i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-amber);"></i',
+            };
+
+            toast.innerHTML = `${icons[type] || icons['info']} <span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = '0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Search Filter for Players Table
+        function filterPlayerTable() {
+            const query = document.getElementById('playerSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#playersTable tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        // Log Filter
+        function filterLogs(category, el) {
+            document.querySelectorAll('#tab-logs .pill-tab').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+
+            const rows = document.querySelectorAll('#logsTable tbody tr');
+            rows.forEach(row => {
+                if (category === 'all' || row.getAttribute('data-category') === category) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // CSV Export
+        function exportLogsCSV() {
+            let csv = "Horario,Categoria,Jogador,Evento\n";
+            document.querySelectorAll('#logsTable tbody tr').forEach(row => {
+                const cols = row.querySelectorAll('td');
+                const rowData = [cols[0].innerText, cols[1].innerText, cols[2].innerText.replace(',', ''), cols[3].innerText.replace(',', '')];
+                csv += rowData.join(',') + "\n";
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'fivem_audit_logs.csv');
+            a.click();
+            showToast('Download do arquivo CSV iniciado!', 'success');
+        }
+
+        // Terminal logic
+        function handleTerminalCommand(e) {
+            if (e.key === 'Enter') sendTerminalCommand();
+        }
+
+        function sendTerminalCommand() {
+            const input = document.getElementById('terminalInput');
+            const cmd = input.value.trim();
+            if (!cmd) return;
+
+            addTerminalLine(`> ${cmd}`, 'line-info');
+            input.value = '';
+
+            setTimeout(() => {
+                addTerminalLine(`[OK] Comando '${cmd}' executado com sucesso no servidor.`, 'line-success');
+            }, 200);
+        }
+
+        function runMacro(command) {
+            addTerminalLine(`> macro executada: ${command}`, 'line-warn');
+            setTimeout(() => {
+                addTerminalLine(`[OK] Execução concluída: ${command}`, 'line-success');
+                showToast(`Macro '${command}' executada!`, 'success');
+            }, 250);
+        }
+
+        function addTerminalLine(text, colorClass) {
+            const terminal = document.getElementById('terminalWindow');
+            const now = new Date().toTimeString().split(' ')[0];
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+            line.innerHTML = `<span class="line-time">[${now}]</span> <span class="${colorClass}">${text}</span>`;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function clearTerminal() {
+            document.getElementById('terminalWindow').innerHTML = '';
+        }
+
+        function triggerAnnounceModal() {
+            const msg = prompt("Digite a mensagem do anúncio global para todos os jogadores:");
+            if (msg) {
+                showToast(`Anúncio enviado: "${msg}"`, 'info');
+                addTerminalLine(`[ANÚNCIO ENVIADO]: ${msg}`, 'line-warn');
+            }
+        }
+
+        function toggleMaintenance() {
+            showToast('Modo Manutenção alternado!', 'warn');
+        }
+
+        function confirmRestart() {
+            if (confirm("Tem certeza que deseja reiniciar o servidor FXServer agora?")) {
+                showToast('Comando de reinício enviado ao servidor!', 'warn');
+                addTerminalLine(`[SERVER]: Reinício do servidor solicitado pela administração.`, 'line-error');
+            }
+        }
+    </script>
+</body>
+</html>
